@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STEAMLab · Física multisensorial universitaria</title>
+  <style>
+    :root{
+      --bg:#071b33;
+      --panel:rgba(7,23,45,.88);
+      --panel2:rgba(13,42,72,.78);
+      --line:#4fdcff;
+      --text:#ecf6ff;
+      --sub:#a8d7ef;
+      --accent:#16d8ff;
+      --accent2:#ffd35a;
+      --ok:#5df0a5;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:linear-gradient(180deg,#071629,#0d2542);
+      color:var(--text);
+    }
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:16px; padding:14px 18px; background:#08213d; border-bottom:1px solid rgba(79,220,255,.25);
+      position:sticky; top:0; z-index:50;
+    }
+    .brand h1{margin:0;font-size:1.45rem}
+    .brand small{color:var(--sub)}
+    .top-actions{display:flex;gap:10px;flex-wrap:wrap}
+    button, .pill{
+      background:#10345d; color:#fff; border:1px solid rgba(79,220,255,.35);
+      border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer;
+      box-shadow:var(--shadow);
+    }
+    button:hover{filter:brightness(1.08)}
+    .page{max-width:1500px; margin:0 auto; padding:18px;}
+    .hero{
+      display:grid; grid-template-columns:360px 1fr; gap:18px; align-items:start;
+    }
+    .panel{
+      background:var(--panel); border:1px solid rgba(79,220,255,.25); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow);
+    }
+    .panel h2{margin:0 0 8px 0; font-size:2rem; line-height:1.05}
+    .panel p{color:var(--sub); line-height:1.45}
+    .formula{font-size:1.2rem; color:#ffe27a; font-weight:700; margin:10px 0 4px}
+    .legend{font-size:.96rem; color:#d6f4ff}
+    .senses{
+      display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:16px;
+    }
+    .sense-card{background:var(--panel2); border-radius:14px; padding:10px 12px; border:1px solid rgba(255,255,255,.08)}
+    .sense-card b{display:block; margin-bottom:4px; color:#fff}
+    .stage-wrap{
+      position:relative; border-radius:22px; overflow:hidden; background:#03111f; border:1px solid rgba(79,220,255,.25);
+      box-shadow:var(--shadow);
+    }
+    .scene{
+      position:relative; width:100%; aspect-ratio:16/9; background:#000 center/cover no-repeat url('laboratorio_fisica_futurista.png');
+      overflow:hidden;
+    }
+    .title-overlay{
+      position:absolute; left:24px; top:24px; background:rgba(10,24,44,.65); backdrop-filter: blur(4px);
+      padding:14px 18px; border-radius:18px; border:1px solid rgba(79,220,255,.18);
+    }
+    .title-overlay h3{margin:0;font-size:2.2rem}
+    .title-overlay p{margin:6px 0 0 0; color:#dbf7ff}
+    .hotspot{
+      position:absolute; width:34px; height:34px; border-radius:50%; border:none;
+      background:radial-gradient(circle,#fff 0%, #7de8ff 30%, rgba(22,216,255,.75) 58%, rgba(22,216,255,.15) 100%);
+      box-shadow:0 0 10px #7de8ff, 0 0 26px rgba(22,216,255,.75);
+      animation:pulse 2.2s infinite;
+      cursor:pointer;
+      z-index:10;
+    }
+    .hotspot::after{
+      content:attr(data-label); position:absolute; left:42px; top:50%; transform:translateY(-50%);
+      white-space:nowrap; padding:6px 10px; border-radius:999px; background:rgba(6,20,37,.78); color:#fff; font-size:.92rem; font-weight:700;
+      border:1px solid rgba(79,220,255,.26); box-shadow:var(--shadow);
+    }
+    .hotspot:hover::after{background:rgba(12,36,66,.92)}
+    @keyframes pulse {0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+    .wave-ring, .light-cone, .eqbar, .floating-note, .taste-badge, .smell-note{
+      position:absolute; pointer-events:none;
+    }
+    .wave-ring{
+      border:3px solid rgba(79,220,255,.7); border-radius:50%; transform:translate(-50%,-50%);
+      animation:wave 1.8s infinite ease-out; opacity:0;
+    }
+    @keyframes wave{0%{width:22px;height:22px;opacity:.85}100%{width:180px;height:180px;opacity:0}}
+    .light-cone{
+      width:240px; height:240px; left:50%; bottom:15%; transform:translateX(-50%);
+      background:conic-gradient(from 0deg, rgba(255,210,90,.0), rgba(79,220,255,.24), rgba(255,210,90,.0));
+      filter:blur(6px); opacity:.85; animation:spin 7s linear infinite;
+      border-radius:50%; mix-blend-mode:screen;
+    }
+    @keyframes spin{to{transform:translateX(-50%) rotate(360deg)}}
+    .eqbar{
+      bottom:16%; width:8px; border-radius:999px 999px 0 0; background:linear-gradient(180deg,#ffe17b,#ff7ad4);
+      animation:equalize 1.1s infinite ease-in-out;
+      box-shadow:0 0 14px rgba(255,225,123,.35);
+    }
+    @keyframes equalize{0%,100%{height:22px}50%{height:110px}}
+    .float{
+      animation:floaty 6s ease-in-out infinite;
+    }
+    @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .floating-note{font-size:30px; color:#fff; text-shadow:0 0 12px rgba(255,255,255,.65); animation:noteDrift 4s linear infinite; opacity:.88}
+    @keyframes noteDrift{0%{transform:translateY(0) scale(1);opacity:.15}30%{opacity:.88}100%{transform:translateY(-120px) scale(1.25);opacity:0}}
+    .taste-badge,.smell-note{
+      padding:10px 14px; border-radius:16px; background:rgba(10,30,56,.82); border:1px solid rgba(79,220,255,.2); box-shadow:var(--shadow); font-weight:700;
+    }
+    .taste-badge{right:18px; bottom:18px; color:#ffe58f}
+    .smell-note{left:18px; bottom:18px; color:#b5ffd4}
+    .info-bar{
+      display:flex; gap:10px; flex-wrap:wrap; padding:14px 18px; background:rgba(5,17,32,.72); border-top:1px solid rgba(79,220,255,.18)
+    }
+    .chip{padding:8px 12px; border-radius:999px; background:#0e3056; color:#dff7ff; border:1px solid rgba(79,220,255,.18); font-size:.95rem}
+    .narrative{margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:18px}
+    .narrative h4{margin:0 0 10px 0; font-size:1.25rem}
+    .msg{margin-top:14px; padding:14px 16px; border-radius:14px; background:#10345d; color:#fff; min-height:78px; line-height:1.45}
+    .footer-note{margin-top:18px;color:#b8dced;font-size:.95rem}
+
+    @media (max-width: 1080px){
+      .hero{grid-template-columns:1fr}
+      .narrative{grid-template-columns:1fr}
+      .panel h2{font-size:1.7rem}
+      .title-overlay h3{font-size:1.5rem}
+    }
+    @media (max-width: 700px){
+      .page{padding:10px}
+      .topbar{padding:12px}
+      .title-overlay{left:12px; top:12px; padding:10px 12px}
+      .title-overlay h3{font-size:1.2rem}
+      .title-overlay p{font-size:.9rem}
+      .hotspot{width:26px;height:26px}
+      .hotspot::after{left:30px; font-size:.78rem; padding:4px 7px}
+      .panel{padding:14px}
+      .senses{grid-template-columns:1fr}
+      .info-bar{padding:10px}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <h1>STEAMLab · Física multisensorial universitaria</h1>
+      <small>2.3.1 · Laboratorio de señales y percepción</small>
+    </div>
+    <div class="top-actions">
+      <button id="btnSound">Sonido: apagado</button>
+      <button id="btnLights">Luces: encendidas</button>
+      <button id="btnTouch">Tacto: activo</button>
+      <button id="btnReset">Reiniciar</button>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="hero">
+      <section class="panel">
+        <h2>Laboratorio de señales y percepción</h2>
+        <p><b>Pregunta viva:</b> ¿Cómo se relacionan frecuencia física y percepción? Este laboratorio interactivo articula visión, oído, tacto y analogías cuidadosas con olfato y gusto para comprender la diferencia entre <b>medición instrumental</b> y <b>experiencia subjetiva</b>.</p>
+        <div class="formula">f = \(\frac{1}{T}\) &nbsp;·&nbsp; FFT &nbsp;·&nbsp; Señal → Espectro</div>
+        <div class="legend">Interactúa con los puntos de luz en la escena. Cada punto activa una experiencia: visualización, sonido, movimiento, vibración o reflexión interpretativa.</div>
+        <div class="senses">
+          <div class="sense-card"><b>Vista</b> luces, barras y colores para representar amplitud, frecuencia y energía.</div>
+          <div class="sense-card"><b>Oído</b> tonos seguros y breves que cambian de altura cuando se interactúa.</div>
+          <div class="sense-card"><b>Tacto</b> movimiento visual y vibración del dispositivo si está disponible.</div>
+          <div class="sense-card"><b>Olfato / gusto</b> analogías guiadas: “aire limpio / metal tibio” y “ácido / neutro / amargo” solo como metáforas pedagógicas, no como experiencia real.</div>
+        </div>
+        <div class="msg" id="message">Haz clic en un punto brillante del laboratorio para comenzar la experiencia multisensorial.</div>
+      </section>
+
+      <section class="stage-wrap">
+        <div class="scene" id="scene">
+          <div class="title-overlay">
+            <h3>Frecuencia, espectro y percepción</h3>
+            <p>Explora cómo una señal puede verse, oírse, sentirse y describirse.</p>
+          </div>
+
+          <div class="light-cone" id="cone"></div>
+
+          <!-- barras tipo ecualizador -->
+          <div class="eqbar" style="left:14%; animation-delay:.2s"></div>
+          <div class="eqbar" style="left:15.2%; animation-delay:.6s"></div>
+          <div class="eqbar" style="left:16.4%; animation-delay:.1s"></div>
+          <div class="eqbar" style="left:17.6%; animation-delay:.4s"></div>
+          <div class="eqbar" style="left:18.8%; animation-delay:.7s"></div>
+          <div class="eqbar" style="right:14%; animation-delay:.35s"></div>
+          <div class="eqbar" style="right:15.2%; animation-delay:.62s"></div>
+          <div class="eqbar" style="right:16.4%; animation-delay:.15s"></div>
+          <div class="eqbar" style="right:17.6%; animation-delay:.47s"></div>
+          <div class="eqbar" style="right:18.8%; animation-delay:.8s"></div>
+
+          <!-- hotspots -->
+          <button class="hotspot" style="left:23%; top:65%" data-action="signal" data-label="Señal y FFT"></button>
+          <button class="hotspot" style="left:50%; top:56%" data-action="sound" data-label="Generador de tono"></button>
+          <button class="hotspot" style="left:76%; top:64%" data-action="touch" data-label="Transductor táctil"></button>
+          <button class="hotspot" style="left:42%; top:27%" data-action="smell" data-label="Analogía olfativa"></button>
+          <button class="hotspot" style="left:60%; top:22%" data-action="taste" data-label="Analogía gustativa"></button>
+
+          <div id="dynamicLayer"></div>
+        </div>
+        <div class="info-bar">
+          <div class="chip">Sentido de la vista: luces que encienden y apagan</div>
+          <div class="chip">Sentido del oído: tonos seguros bajo interacción</div>
+          <div class="chip">Sentido del tacto: movimiento y vibración opcional</div>
+          <div class="chip">Nivel universitario: señal, espectro y percepción</div>
+        </div>
+      </section>
+    </div>
+
+    <div class="narrative">
+      <section class="panel">
+        <h4>Secuencia de uso sugerida</h4>
+        <p>1) Observa la escena y formula una hipótesis sobre cómo se vería una señal simple.<br>
+           2) Activa <b>Señal y FFT</b> y describe la relación entre patrón y espectro.<br>
+           3) Activa <b>Generador de tono</b> y relaciona altura percibida con frecuencia.<br>
+           4) Activa <b>Transductor táctil</b> y discute qué parte de la experiencia pertenece a la física y cuál a la percepción.</p>
+        <p>Finalmente, usa las analogías de olfato y gusto para promover lenguaje multimodal sin afirmar experiencias que el sistema realmente no produce.</p>
+      </section>
+      <section class="panel">
+        <h4>Nombre sugerido para GitHub</h4>
+        <p><b>Repositorio:</b> <code>steamlab-fisica-multisensorial</code><br>
+           <b>Página:</b> <code>https://TU-USUARIO.github.io/steamlab-fisica-multisensorial/</code></p>
+        <p>Este archivo ya viene listo para GitHub Pages. Solo sube el contenido del ZIP a un repositorio nuevo y activa Pages desde la rama principal.</p>
+        <div class="footer-note">Nota pedagógica: olfato y gusto se representan mediante metáforas y tarjetas interpretativas, no como estimulación real. Así se mantiene rigor didáctico y seguridad.</div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const scene = document.getElementById('scene');
+    const message = document.getElementById('message');
+    const dynamicLayer = document.getElementById('dynamicLayer');
+    const btnSound = document.getElementById('btnSound');
+    const btnLights = document.getElementById('btnLights');
+    const btnTouch = document.getElementById('btnTouch');
+    const btnReset = document.getElementById('btnReset');
+    const cone = document.getElementById('cone');
+
+    let audioEnabled = false;
+    let lightsOn = true;
+    let touchOn = true;
+    let audioCtx = null;
+
+    function ensureAudio(){
+      if(!audioCtx){
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if(audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function playTone(freq=440, duration=0.35, type='sine'){
+      if(!audioEnabled) return;
+      ensureAudio();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.08, audioCtx.currentTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration + 0.03);
+    }
+
+    function clearDynamic(){ dynamicLayer.innerHTML=''; }
+
+    function addWave(x,y,color='rgba(79,220,255,.72)'){
+      for(let i=0;i<3;i++){
+        const ring = document.createElement('div');
+        ring.className='wave-ring';
+        ring.style.left=x+'%';
+        ring.style.top=y+'%';
+        ring.style.borderColor=color;
+        ring.style.animationDelay=(i*0.28)+'s';
+        dynamicLayer.appendChild(ring);
+      }
+    }
+
+    function addNotes(x,y){
+      ['♪','♫','♬'].forEach((t,i)=>{
+        const n=document.createElement('div');
+        n.className='floating-note';
+        n.textContent=t;
+        n.style.left=`calc(${x}% + ${i*20-10}px)`;
+        n.style.top=`calc(${y}% + ${i*8}px)`;
+        n.style.animationDelay=(i*0.25)+'s';
+        dynamicLayer.appendChild(n);
+      });
+    }
+
+    function addBadge(cls, html){
+      const d=document.createElement('div');
+      d.className=cls;
+      d.innerHTML=html;
+      dynamicLayer.appendChild(d);
+    }
+
+    function vibrate(pattern){
+      if(touchOn && navigator.vibrate){ navigator.vibrate(pattern); }
+    }
+
+    function signalAction(){
+      clearDynamic();
+      addWave(23,65,'rgba(79,220,255,.8)');
+      message.innerHTML = '<b>Señal y FFT:</b> observa las ondas expansivas y relaciónalas con una señal que se analiza en frecuencia. Pregunta clave: ¿dos señales de distinta forma pueden compartir componentes espectrales?';
+      playTone(392,.28,'triangle');
+      playTone(523,.30,'triangle');
+      vibrate([70,30,70]);
+    }
+
+    function soundAction(){
+      clearDynamic();
+      addNotes(50,56);
+      addWave(50,56,'rgba(255,211,90,.85)');
+      message.innerHTML = '<b>Generador de tono:</b> el oído percibe altura, pero la física mide frecuencia. Escucha el cambio y diferencia entre percepción subjetiva e instrumento.';
+      [330,440,550].forEach((f,i)=> setTimeout(()=>playTone(f,.23,'sine'), i*180));
+    }
+
+    function touchAction(){
+      clearDynamic();
+      addWave(76,64,'rgba(93,240,165,.85)');
+      message.innerHTML = '<b>Transductor táctil:</b> la señal se representa con movimiento y vibración. El tacto ayuda a construir comprensión sin reemplazar la medición cuantitativa.';
+      playTone(180,.45,'square');
+      vibrate([120,40,120,40,180]);
+    }
+
+    function smellAction(){
+      clearDynamic();
+      addBadge('smell-note', '👃 <b>Analogía olfativa:</b><br>“aire limpio”, “metal tibio” o “ozono” ayudan a describir un ambiente experimental, pero son metáforas pedagógicas, no medición.');
+      message.innerHTML = '<b>Analogía olfativa:</b> en ciencias, el lenguaje sensorial puede enriquecer la descripción, siempre que no se confunda con evidencia instrumental.';
+      playTone(660,.18,'sine');
+    }
+
+    function tasteAction(){
+      clearDynamic();
+      addBadge('taste-badge', '👅 <b>Analogía gustativa:</b><br>“suave”, “agudo”, “amargo”, “neutro” pueden apoyar la comunicación conceptual. No son propiedades físicas del sonido.');
+      message.innerHTML = '<b>Analogía gustativa:</b> sirve para crear puentes expresivos y memorables, pero debe aclararse que no sustituye el análisis físico de la señal.';
+      playTone(587,.22,'triangle');
+    }
+
+    document.querySelectorAll('.hotspot').forEach(h => {
+      h.addEventListener('click', () => {
+        const a = h.dataset.action;
+        if(a==='signal') signalAction();
+        else if(a==='sound') soundAction();
+        else if(a==='touch') touchAction();
+        else if(a==='smell') smellAction();
+        else if(a==='taste') tasteAction();
+      });
+    });
+
+    btnSound.addEventListener('click', async ()=>{
+      audioEnabled = !audioEnabled;
+      if(audioEnabled) ensureAudio();
+      btnSound.textContent = 'Sonido: ' + (audioEnabled ? 'encendido' : 'apagado');
+      message.innerHTML = audioEnabled ? 'Sonido activado. Ahora los puntos interactivos reproducirán tonos breves y seguros.' : 'Sonido desactivado. Puedes seguir usando la experiencia de manera silenciosa.';
+      if(audioEnabled) playTone(440,.18,'sine');
+    });
+
+    btnLights.addEventListener('click', ()=>{
+      lightsOn = !lightsOn;
+      document.querySelectorAll('.eqbar,.hotspot,.light-cone').forEach(el=>{
+        el.style.opacity = lightsOn ? '' : '.25';
+      });
+      btnLights.textContent = 'Luces: ' + (lightsOn ? 'encendidas' : 'atenuadas');
+      message.innerHTML = lightsOn ? 'Luces restauradas: la vista vuelve a enfatizar barras, focos y brillo experimental.' : 'Luces atenuadas: la experiencia sigue activa con menor intensidad visual.';
+    });
+
+    btnTouch.addEventListener('click', ()=>{
+      touchOn = !touchOn;
+      btnTouch.textContent = 'Tacto: ' + (touchOn ? 'activo' : 'apagado');
+      message.innerHTML = touchOn ? 'Tacto activo: si tu dispositivo lo permite, se habilita la vibración en algunas interacciones.' : 'Tacto apagado: la experiencia funcionará sin vibración.';
+    });
+
+    btnReset.addEventListener('click', ()=>{
+      clearDynamic();
+      message.innerHTML = 'Haz clic en un punto brillante del laboratorio para comenzar la experiencia multisensorial.';
+      document.querySelectorAll('.eqbar,.hotspot,.light-cone').forEach(el=> el.style.opacity='');
+      lightsOn = true;
+      btnLights.textContent = 'Luces: encendidas';
+    });
+  </script>
+</body>
+</html>
